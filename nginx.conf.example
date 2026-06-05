@@ -1,0 +1,21 @@
+# Пример конфигурации nginx для раздачи собранного SPA.
+# Маршрутизация на HashRouter, поэтому try_files не обязателен,
+# но оставлен для надёжности.
+
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/recipes/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Кэширование статических ассетов сборки Vite.
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
