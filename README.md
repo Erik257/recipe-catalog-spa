@@ -43,6 +43,8 @@ npm run preview  # локальный просмотр собранной вер
 
 ## Развёртывание
 
+### Локальная сборка
+
 ```bash
 npm install
 npm run build    # результат — в папке dist/
@@ -51,6 +53,29 @@ npm run build    # результат — в папке dist/
 Содержимое `dist/` раздаётся веб-сервером как статика. Маршрутизация реализована
 через `HashRouter`, поэтому статическая раздача работает без дополнительных правил
 rewrite. Пример конфигурации nginx — в [`nginx.conf.example`](nginx.conf.example).
+
+### Автоматическое развёртывание (CI/CD)
+
+Конвейер описан в [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+При каждом пуше в ветку `main` GitHub Actions автоматически:
+
+1. устанавливает зависимости (`npm ci`);
+2. собирает приложение (`npm run build`);
+3. публикует результат на GitHub Pages.
+
+Статус прогонов — во вкладке **Actions** репозитория, результат — на странице GitHub Pages.
+
+### Контейнеризация (Docker)
+
+Сборка и запуск в контейнере (nginx раздаёт собранную статику):
+
+```bash
+docker compose up -d --build
+```
+
+Приложение будет доступно на `http://localhost:8080`. Конфигурация — в
+[`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml) и
+[`docker/nginx.conf`](docker/nginx.conf).
 
 ## Структура проекта
 
