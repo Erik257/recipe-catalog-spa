@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { formatDate, imageUrl } from '../utils/format'
+import { formatDate, imageUrl, splitDescription } from '../utils/format'
 import { dishImage } from '../utils/dishImage'
 
 // Карточка рецепта в списке.
@@ -24,7 +24,9 @@ export default function RecipeCard({ recipe, children }) {
         {recipe.created_at && (
           <div className="card__date">{formatDate(recipe.created_at)}</div>
         )}
-        {recipe.description && <p className="card__desc">{recipe.description}</p>}
+        {recipe.description && (
+          <p className="card__desc">{splitDescription(recipe.description).description}</p>
+        )}
         <div className="card__meta">
           <span className="badge">🔥 {recipe.calorie} ккал</span>
           <span className="badge">⏱ {recipe.coocking_time} мин</span>

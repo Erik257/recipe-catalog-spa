@@ -1,5 +1,22 @@
 import { SITE_URL } from '../config'
 
+// В API нет отдельного поля для способа приготовления — храним его
+// внутри description после разделителя.
+export const METHOD_SEP = '\n\n— Способ приготовления —\n'
+
+export function splitDescription(desc = '') {
+  const text = desc || ''
+  const i = text.indexOf(METHOD_SEP)
+  if (i === -1) return { description: text, method: '' }
+  return { description: text.slice(0, i), method: text.slice(i + METHOD_SEP.length) }
+}
+
+export function joinDescription(description, method) {
+  const d = (description || '').trim()
+  const m = (method || '').trim()
+  return m ? `${d}${METHOD_SEP}${m}` : d
+}
+
 // Форматирование даты создания в читаемый вид.
 export function formatDate(iso) {
   if (!iso) return ''

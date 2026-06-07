@@ -9,7 +9,7 @@ import {
   parseApiErrors,
   errorMessage,
 } from '../api/recipes'
-import { imageUrl, PLACEHOLDER_IMG } from '../utils/format'
+import { imageUrl, PLACEHOLDER_IMG, splitDescription, joinDescription } from '../utils/format'
 import { dishImage } from '../utils/dishImage'
 import FieldError from '../components/FieldError'
 
@@ -24,7 +24,7 @@ export default function RecipeFormPage({ mode }) {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ name: '', description: '', calorie: '', coocking_time: '' })
+  const [form, setForm] = useState({ name: '', description: '', method: '', calorie: '', coocking_time: '' })
   const [rows, setRows] = useState([emptyRow()])
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
@@ -63,9 +63,11 @@ export default function RecipeFormPage({ mode }) {
       .then((res) => {
         if (!active) return
         const r = res.data
+        const parsed = splitDescription(r.description ?? '')
         setForm({
           name: r.name ?? '',
-          description: r.description ?? '',
+          description: parsed.description,
+          method: parsed.method,
           calorie: String(r.calorie ?? ''),
           coocking_time: String(r.coocking_time ?? ''),
         })
@@ -141,6 +143,8 @@ export default function RecipeFormPage({ mode }) {
     const e = {}
     if (!form.name.trim()) e.name = 'Введите название'
     if (!form.description.trim()) e.description = 'Введите описание'
+    if (joinDescription(form.description, form.method).length > 500)
+      e.method = 'Описание и способ приготовления вместе не должны превышать 500 символов'
     if (form.calorie === '' || Number(form.calorie) < 0) e.calorie = 'Укажите калорийность'
     if (form.coocking_time === '' || Number(form.coocking_time) < 0)
       e.coocking_time = 'Укажите время приготовления'
@@ -165,7 +169,7 @@ export default function RecipeFormPage({ mode }) {
 
     const fd = new FormData()
     fd.append('name', form.name)
-    fd.append('description', form.description)
+    fd.append('description', joinDescription(form.description, form.method))
     fd.append('calorie', String(form.calorie))
     fd.append('coocking_time', String(form.coocking_time))
 
@@ -243,6 +247,19 @@ export default function RecipeFormPage({ mode }) {
             className={errors.description ? 'input input--invalid' : 'input'}
           />
           <FieldError error={errors.description} />
+        </label>
+
+        <label className="field">
+          <span className="field__label">Способ приготовления</span>
+          <textarea
+            name="method"
+            value={form.method}
+            onChange={onField}
+            rows={6}
+            placeholder="Опишите шаги приготовления, каждый шаг с новой строки"
+            className={errors.method ? 'input input--invalid' : 'input'}
+          />
+          <FieldError error={errors.method} />
         </label>
 
         <div className="field-row">

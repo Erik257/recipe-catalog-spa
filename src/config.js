@@ -10,7 +10,7 @@ export const API_BASE = 'https://recipes.pasdel.ru/public/api'
 export const SITE_URL = 'https://recipes.pasdel.ru'
 
 // Идентификатор песочницы API (заголовок Client).
-export const CLIENT = 'erik257'
+export const CLIENT = 'erikcatalog'
 
 // WebSocket-сервер уведомлений о новых рецептах.
 // Если сервер недоступен, приложение продолжает работать без

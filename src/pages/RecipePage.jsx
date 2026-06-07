@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getRecipe, errorMessage } from '../api/recipes'
-import { formatDate, imageUrl } from '../utils/format'
+import { formatDate, imageUrl, splitDescription } from '../utils/format'
 import { dishImage } from '../utils/dishImage'
+import { dishSteps } from '../utils/dishSteps'
 
 export default function RecipePage() {
   const { id } = useParams()
@@ -33,6 +34,14 @@ export default function RecipePage() {
   if (error) return <div className="alert alert--error">{error}</div>
   if (!recipe) return null
 
+  const { description, method } = splitDescription(recipe.description)
+  const embeddedSteps = method
+    .split('\n')
+    .map((s) => s.replace(/^\s*\d+[).]\s*/, '').trim())
+    .filter(Boolean)
+  // Если способ приготовления не задан в рецепте — подставляем по названию.
+  const steps = embeddedSteps.length ? embeddedSteps : dishSteps(recipe.name)
+
   return (
     <article className="recipe-view">
       <Link to="/" className="back-link">
@@ -58,7 +67,7 @@ export default function RecipePage() {
             <span className="badge">🔥 {recipe.calorie} ккал</span>
             <span className="badge">⏱ {recipe.coocking_time} мин</span>
           </div>
-          <p className="recipe-view__desc">{recipe.description}</p>
+          <p className="recipe-view__desc">{description}</p>
         </div>
       </div>
 
@@ -76,6 +85,19 @@ export default function RecipePage() {
         </ul>
       ) : (
         <p className="empty">Ингредиенты не указаны.</p>
+      )}
+
+      {steps.length > 0 && (
+        <>
+          <h2 className="section-subtitle">Способ приготовления</h2>
+          <ol className="steps-list">
+            {steps.map((s, i) => (
+              <li key={i} className="steps-list__item">
+                {s}
+              </li>
+            ))}
+          </ol>
+        </>
       )}
     </article>
   )
