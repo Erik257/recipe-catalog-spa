@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getRecipe, errorMessage } from '../api/recipes'
-import { formatDate, imageUrl, PLACEHOLDER_IMG } from '../utils/format'
+import { formatDate, imageUrl } from '../utils/format'
+import { dishImage } from '../utils/dishImage'
 
 export default function RecipePage() {
   const { id } = useParams()
@@ -41,10 +42,11 @@ export default function RecipePage() {
       <div className="recipe-view__grid">
         <img
           className="recipe-view__image"
-          src={recipe.image_url ? imageUrl(recipe.image_url) : PLACEHOLDER_IMG}
+          src={recipe.image_url ? imageUrl(recipe.image_url) : dishImage(recipe.name)}
           alt={recipe.name}
           onError={(e) => {
-            e.currentTarget.src = PLACEHOLDER_IMG
+            e.currentTarget.onerror = null
+            e.currentTarget.src = dishImage(recipe.name)
           }}
         />
         <div className="recipe-view__info">

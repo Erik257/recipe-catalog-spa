@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { formatDate, imageUrl, PLACEHOLDER_IMG } from '../utils/format'
+import { formatDate, imageUrl } from '../utils/format'
+import { dishImage } from '../utils/dishImage'
 
 // Карточка рецепта в списке.
 export default function RecipeCard({ recipe, children }) {
@@ -8,10 +9,11 @@ export default function RecipeCard({ recipe, children }) {
       <Link to={`/recipes/${recipe.id}`} className="card__image-wrap">
         <img
           className="card__image"
-          src={recipe.image_url ? imageUrl(recipe.image_url) : PLACEHOLDER_IMG}
+          src={recipe.image_url ? imageUrl(recipe.image_url) : dishImage(recipe.name)}
           alt={recipe.name}
           onError={(e) => {
-            e.currentTarget.src = PLACEHOLDER_IMG
+            e.currentTarget.onerror = null
+            e.currentTarget.src = dishImage(recipe.name)
           }}
         />
       </Link>

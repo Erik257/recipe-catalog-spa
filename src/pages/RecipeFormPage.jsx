@@ -10,6 +10,7 @@ import {
   errorMessage,
 } from '../api/recipes'
 import { imageUrl, PLACEHOLDER_IMG } from '../utils/format'
+import { dishImage } from '../utils/dishImage'
 import FieldError from '../components/FieldError'
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2 Мб
@@ -291,7 +292,8 @@ export default function RecipeFormPage({ mode }) {
                   src={existingImage}
                   alt="Текущее изображение"
                   onError={(e) => {
-                    e.currentTarget.src = PLACEHOLDER_IMG
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = dishImage(form.name)
                   }}
                 />
               </figure>
