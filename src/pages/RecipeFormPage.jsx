@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   getRecipe,
+  getRecipes,
   getIngredients,
   createRecipe,
   updateRecipe,
@@ -34,10 +35,21 @@ export default function RecipeFormPage({ mode }) {
   const [loading, setLoading] = useState(isEdit)
   const [submitting, setSubmitting] = useState(false)
 
-  // Справочник ингредиентов для выпадающего списка.
+  // Справочник ингредиентов для выпадающего списка
+  // (из /ingredients и из ингредиентов существующих рецептов).
   useEffect(() => {
-    getIngredients()
-      .then((res) => setIngredientOptions(Array.isArray(res.data) ? res.data : []))
+    Promise.all([getIngredients(), getRecipes()])
+      .then(([ingRes, recRes]) => {
+        const map = new Map()
+        const add = (o) => {
+          if (o?.id != null && o.name && !map.has(o.id)) map.set(o.id, { id: o.id, name: o.name })
+        }
+        ;(Array.isArray(ingRes.data) ? ingRes.data : []).forEach(add)
+        ;(Array.isArray(recRes.data) ? recRes.data : []).forEach((r) =>
+          (r.ingredients || []).forEach(add)
+        )
+        setIngredientOptions([...map.values()])
+      })
       .catch(() => setIngredientOptions([]))
   }, [])
 
@@ -275,7 +287,13 @@ export default function RecipeFormPage({ mode }) {
             {isEdit && existingImage && (
               <figure className="image-previews__item">
                 <figcaption>Текущее</figcaption>
-                <img src={existingImage} alt="Текущее изображение" />
+                <img
+                  src={existingImage}
+                  alt="Текущее изображение"
+                  onError={(e) => {
+                    e.currentTarget.src = PLACEHOLDER_IMG
+                  }}
+                />
               </figure>
             )}
             {imagePreview && (
