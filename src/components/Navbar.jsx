@@ -14,7 +14,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navbar__inner container">
         <NavLink to="/" className="navbar__brand">
-          🍲 Каталог&nbsp;рецептов
+           Каталог&nbsp;рецептов
         </NavLink>
 
         <nav className="navbar__links">
