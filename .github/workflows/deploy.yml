@@ -34,6 +34,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        
+      - name: Build Docker image
+        run: docker build -t recipe-catalog-spa .
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
